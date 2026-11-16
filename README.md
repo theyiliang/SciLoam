@@ -57,33 +57,7 @@ SciLoam 不是再增加一个孤立的知识库，而是把 **知识录入 → �
 
 ## 架构
 
-```mermaid
-flowchart TB
-  UI["React 工作台<br/>问答 · 知识库 · 审核 · 任务 · 成员"]
-  subgraph COLLAB["知识协作"]
-    direction LR
-    K["知识录入"] --> V["不可变版本"] --> S["指定版本送审"] --> R["成果副本"]
-  end
-  subgraph QA["授权问答"]
-    direction LR
-    Q["用户问题"] --> P["实时权限过滤"] --> E["检索与证据装配"] --> A["回答 + 原文引用"]
-  end
-  BASE["技术底座<br/>FastAPI · 领域权限与版本规则 · SQLite / 本地索引"]
-  EXT["可选外部模型 / 向量服务"]
-  UI --> K
-  UI --> Q
-  R --> BASE
-  A --> BASE
-  EXT -. 显式开启 .-> E
-  classDef knowledge fill:#ecfdf5,stroke:#059669,color:#064e3b;
-  classDef qa fill:#eff6ff,stroke:#3b82f6,color:#1e3a8a;
-  classDef base fill:#f8fafc,stroke:#64748b,color:#0f172a;
-  class K,V,S,R knowledge;
-  class Q,P,E,A qa;
-  class UI,BASE,EXT base;
-  style COLLAB fill:#f0fdf4,stroke:#86efac,color:#14532d
-  style QA fill:#eff6ff,stroke:#bfdbfe,color:#1e3a8a
-```
+![SciLoam 架构：知识协作、授权问答与技术底座](docs/images/architecture.svg)
 
 - 权限以服务端实时状态为准，前端提示不替代后端校验。
 - 外部模型只读取当前请求方有权访问的片段；未配置模型时仅返回本地证据摘录。
