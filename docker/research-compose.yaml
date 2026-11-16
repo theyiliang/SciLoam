@@ -1,0 +1,43 @@
+services:
+  research:
+    build:
+      context: ..
+      dockerfile: Dockerfile.research
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      RESEARCH_ENV: production
+      RESEARCH_COOKIE_SECURE: "1"
+      RESEARCH_ALLOWED_HOSTS: ${RESEARCH_ALLOWED_HOSTS:?设置实际域名，例如 research.example.org,localhost,127.0.0.1}
+      RESEARCH_DATA_DIR: /app/research-data
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://dashscope.aliyuncs.com/compatible-mode/v1}
+      LLM_MODEL: ${LLM_MODEL:-qwen3-max}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      RESEARCH_RETRIEVAL_MODE: ${RESEARCH_RETRIEVAL_MODE:-local}
+      RESEARCH_RAG_ALLOW_EXTERNAL: ${RESEARCH_RAG_ALLOW_EXTERNAL:-0}
+      EMBEDDING_BASE_URL: ${EMBEDDING_BASE_URL:-}
+      EMBEDDING_API_KEY: ${EMBEDDING_API_KEY:-}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-v4}
+      EMBEDDING_DIM: ${EMBEDDING_DIM:-1024}
+      EMBEDDING_MAX_BATCH: ${EMBEDDING_MAX_BATCH:-10}
+      QDRANT_URL: ${QDRANT_URL:-}
+      RERANKER_BASE_URL: ${RERANKER_BASE_URL:-}
+      RERANKER_API_KEY: ${RERANKER_API_KEY:-}
+      RERANKER_MODEL: ${RERANKER_MODEL:-}
+    volumes:
+      - research-data:/app/research-data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+volumes:
+  research-data:
